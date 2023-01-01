@@ -1,53 +1,31 @@
 import scrapy
-import datetime
+from datetime import datetime
 import time
 import json
+from ..items import WebscrapyDailyCommodityItem
 
 class FamaSpider(scrapy.Spider):
     name = 'fama'
-    allowed_domains = ['sdvi2.fama.gov.my']
-    start_urls = ['http://sdvi2.fama.gov.my/']
+    allowed_domains = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt=2022/12/29&PricingDtPrev=2022/12/27']
+    start_urls = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt=2022/12/29&PricingDtPrev=2022/12/27']
 
-    today = datetime.now().strftime("%Y/%m/%d")
-
-    log_file = f'GetGold/logs/{today}.log'
-    custom_settings = {'LOG_LEVEL': 'INFO', 'LOG_FILE': log_file}
-
-    def start_requests(self):
-        utc_time = datetime.utcnow()
-        crawl_ts = int(time.time())
-        crawl_dt = str(crawl_ts)
-        yield scrapy.Request(
-                url=self.url,  
-                headers={
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'
-                },
-                callback=self.parse,
-                meta = {
-                    'crawl_ts': crawl_ts,
-                    'crawl_dt' : crawl_dt,
-                    'utc_time': utc_time  
-                }
-        )
 
     def parse(self, response):
-        
-        utc_time = response.meta['utc_time']
-        crawl_ts = response.meta['crawl_ts']
-        crawl_dt = response.meta['crawl_dt']
-        json_response = json.loads(response.text)
-        data = json_response.get('data')
-        for record in data:
-            yield {
-                'buyingPrice': record['buyingPrice'],
-                'sellingPrice': record['sellingPrice'],
-                'goldCode': record['code'],
-                'sellChange': record['sellChange'],
-                'sellChangePercent': record['sellChangePercent'],
-                'buyChange': record['buyChange'],
-                'buyChangePercent': record['buyChangePercent'],
-                'lastUpdate': str(int(datetime.datetime.strptime(record['dateTime']))),
-                'lastUpdateTimeStamp': int(datetime.datetime.strptime(record['dateTime'])),
-                'crawlDate': crawl_dt,
-                'crawlTimeStamp': crawl_ts
-            }
+
+        pusat = response.xpath("/html/body/table/tr/td")
+
+        for p in pusat:
+
+            # Create an object of Item class
+            item = WebscrapyDailyCommodityItem()
+
+            item["NamaPusat"] = p.xpath(".//table[position() mod 2 = 1]/tr/td/b/text()").extract()
+            item["NamaVarieti"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[1]/text()").extract()
+            item["UnitBarang"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[3]/text()").extract()
+            item["HargaTinggi"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract()
+            item["HargaPurata"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[5]/text()").extract()
+            item["HargaRendah"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[6]/text()").extract()
+
+
+            #//*[@id="D101"]/td[1] /html/body/table/tbody/tr[5]/td/table[2]/tbody/tr[3]/td[1]
+            #/html/body/table/tbody/tr[5]/td/table[1]/tbody/tr/td/b
