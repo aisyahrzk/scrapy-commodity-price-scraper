@@ -27,4 +27,6 @@ class WebscrapyDailyCommodityItem(scrapy.Item):
 
     #Lowest reported price of one unit of product
     HargaRendah = scrapy.Field()
+
+    dateTime = scrapy.Field()
     
