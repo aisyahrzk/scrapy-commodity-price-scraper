@@ -66,6 +66,6 @@ def asyncio_schedule():
 if __name__ == '__main__':
     # Running message
     print('Started application {}'.format(datetime.now()))
-    print('****************************** APP IS RUNNING ******************************')
+    print('****************************** CRAWLER IS RUNNING ******************************')
     # Run process
     asyncio_schedule()

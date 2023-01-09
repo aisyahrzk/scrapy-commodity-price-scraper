@@ -72,5 +72,5 @@ class PostgresPipeline(object):
                         """.format(schema=self.schema, insert_table=self.insert_table, **item)
         )
         self.client.commit()
-        logging.info("Upserted a record to the table '{schema}.{insert_table}'".format(schema=self.schema, insert_table=self.insert_table))
+        logging.info("Inserted a record to the table '{schema}.{insert_table}'".format(schema=self.schema, insert_table=self.insert_table))
         return item

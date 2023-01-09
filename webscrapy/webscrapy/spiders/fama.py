@@ -25,7 +25,9 @@ class FamaSpider(scrapy.Spider):
             item["HargaTinggi"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract()
             item["HargaPurata"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[5]/text()").extract()
             item["HargaRendah"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[6]/text()").extract()
+            
 
-
+    
+             
             #//*[@id="D101"]/td[1] /html/body/table/tbody/tr[5]/td/table[2]/tbody/tr[3]/td[1]
             #/html/body/table/tbody/tr[5]/td/table[1]/tbody/tr/td/b
