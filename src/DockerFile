@@ -1,3 +1,65 @@
-FROM --platform=linux/arm torizon/debian:2-bullseye
+# As Scrapy runs on Python, I choose the official Python 3 Docker image.
+FROM python:3.9
+
+# Copy the file from the local host to the filesystem of the container at the working directory.
+COPY requirements.txt ./
+
+# Install VIM
+RUN apt-get update && apt-get install apt-file -y && apt-file update && apt-get install vim -y
+
+# Set timezone for image
+RUN apt-get install -yq tzdata && \
+    ln -fs /usr/share/zoneinfo/Asia/Saigon /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata
+ENV TZ="Asia/Saigon"
+
+# Install Scrapy specified in requirements.txt.
+RUN pip install --upgrade pip setuptools wheel
+RUN pip install \
+    scrapy \
+    apscheduler \
+    pg8000
  
-RUN apt update && apt install nano -y
+# Set the working directory to /usr/src/app.
+WORKDIR /usr/src/app
+
+# Copy the project source code from the local host to the filesystem of the container at the working directory.
+COPY . .
+
+# Run the crawler when the container launches.
+CMD [ "python3", "./src/main.py" ]
+
+
+# build image
+echo ""
+echo "----------------------- STEP 1 ----------------------- | Build Image"
+docker build --rm -t ${image_name} .
+
+# push to dockerhub
+echo ""
+echo "----------------------- STEP 2 ----------------------- | Push image to docker hub"
+docker push ${image_name}
+
+
+
+# pull image with latest tag
+echo ""
+echo "----------------------- STEP 1 ----------------------- | Pull image from docker hub"
+docker pull ${image_name}
+
+# stop and rm if there is any running container
+echo ""
+echo "----------------------- STEP 2 ----------------------- | Stop and rm current container"
+docker container stop ${container_name}
+docker container rm ${container_name}
+
+# run
+echo ""
+echo "----------------------- STEP 3 ----------------------- | Start container in Docker"
+
+docker run -d \
+            --env-file ./env.list \
+            --name=${container_name} \
+            ${image_name}
+echo ""
+echo "Started docker successfully!"
