@@ -7,19 +7,20 @@ import pg8000
 import json
 import logging
 import os
+import config
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 
 
 class PostgresPipeline(object):
     # Init 
-    user            =   os.environ.get('DB_USER' ,'')
-    password        =   os.environ.get('DB_PASSWORD', '')
-    host            =   os.environ.get('DB_HOSTNAME', '')
-    database        =   os.environ.get('DB_DATABASE', '')
-    port            =   os.environ.get('DB_PORT', '')
-    schema          =   os.environ.get('DB_SCHEMA', '')
-    insert_table    =   os.environ.get('DB_INSERT_TABLE', '')
+    user            =   config.DB_USER
+    password        =   config.DB_PASSWORD
+    host            =   config.DB_HOSTNAME
+    database        =   config.DB_DATABASE
+    port            =   config.DB_PORT
+    schema          =   config.DB_SCHEMA
+    insert_table    =   config.DB_INSERT_TABLE
     
     def open_spider(self, spider):
         self.client = pg8000.connect(
