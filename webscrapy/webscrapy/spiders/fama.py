@@ -1,27 +1,23 @@
 import scrapy
 from datetime import datetime
-import time
-import json
 from ..items import WebscrapyDailyCommodityItem
-from datetime import date, timedelta
 from scrapy.http import Request
 import pandas as pd
 
 
 class FamaSpider(scrapy.Spider):
     name = 'fama'
-    allowed_domains = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt=2022/12/29&PricingDtPrev=2022/12/27']
-    start_urls = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt=2022/12/29&PricingDtPrev=2022/12/27']
+    start_urls = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt=2015/01/01&PricingDtPrev=2015/01/01']
 
 
     def parse(self, response):
 
-        start_date = date(2015, 1, 1)
-        end_date = date(2023,1,9)
-        delta = timedelta(days=1)
-        urls = ('https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt={}&PricingDtPrev={}'.format(i) for i in pd.date_range(start_date,end_date))
-        for url in urls:
-            yield Request(url, callback=self.parse_page)
+        start_date = '2015/01/01'
+        end_date = '2023/01/09'
+        dateRange = pd.date_range(start_date,end_date)
+        urls = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt={0}&PricingDtPrev={0}'.format(i) for i in dateRange.strftime('%Y/%m/%d')]
+        for url in urls: 
+            Request(url, callback=self.parse_page)
 
     def parse_page(self, response):
         
@@ -40,5 +36,6 @@ class FamaSpider(scrapy.Spider):
             item["HargaPurata"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[5]/text()").extract()
             item["HargaRendah"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[6]/text()").extract()
             item["Timestamp"] = datetime.date()
+            print(p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract())
 
             
