@@ -39,4 +39,6 @@ class FamaSpider(scrapy.Spider):
             item["HargaTinggi"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract()
             item["HargaPurata"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[5]/text()").extract()
             item["HargaRendah"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[6]/text()").extract()
+            item["Timestamp"] = datetime.date()
+
             
