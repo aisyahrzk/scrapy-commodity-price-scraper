@@ -1,3 +1,5 @@
 /.venv
 /.vscode
 /src/config.py
+webscrapy/webscrapy/__pycache__/settings.cpython-39.pyc
+webscrapy/webscrapy/spiders/__pycache__/fama.cpython-39.pyc
