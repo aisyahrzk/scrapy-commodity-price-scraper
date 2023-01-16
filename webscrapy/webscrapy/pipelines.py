@@ -4,9 +4,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 import pg8000
-import json
 import logging
-import os
 import config
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter

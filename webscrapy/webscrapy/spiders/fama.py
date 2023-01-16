@@ -15,27 +15,31 @@ class FamaSpider(scrapy.Spider):
         start_date = '2015/01/01'
         end_date = '2023/01/09'
         dateRange = pd.date_range(start_date,end_date)
-        urls = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt={0}&PricingDtPrev={0}'.format(i) for i in dateRange.strftime('%Y/%m/%d')]
+        urls = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt={0}&PricingDtPrev={0}'.format('2015/01/01')]
         for url in urls: 
-            Request(url, callback=self.parse_page)
-
+            yield Request(url, callback=self.parse_page)
+#for i in dateRange.strftime('%Y/%m/%d')
     def parse_page(self, response):
         
 
-        pusat = response.xpath("/html/body/table/tr/td")
+        barang = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[1]/text()")
 
-        for p in pusat:
+        for p in range(len(barang)):
 
             # Create an object of Item class
             item = WebscrapyDailyCommodityItem()
 
-            item["NamaPusat"] = p.xpath(".//table[position() mod 2 = 1]/tr/td/b/text()").extract()
-            item["NamaVarieti"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[1]/text()").extract()
-            item["UnitBarang"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[3]/text()").extract()
-            item["HargaTinggi"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract()
-            item["HargaPurata"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[5]/text()").extract()
-            item["HargaRendah"] = p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[6]/text()").extract()
-            item["Timestamp"] = datetime.date()
-            print(p.xpath(".//table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract())
+            index_pusat = p % 36
+            print(index_pusat)
 
+            item["NamaPusat"] = response.xpath("/html/body/table/tr/td/table[position () mod 2 = 1]/tr/td/b/text()").extract()[index_pusat]
+            #item["NamaPusat"] = response.xpath("/html/body/table/tr/td").extract()
+            item["NamaVarieti"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[1]/text()").extract()[p]
+            item["UnitBarang"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[3]/text()").extract()[p]
+            item["HargaTinggi"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract()[p]
+            item["HargaPurata"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[5]/text()").extract()[p]
+            item["HargaRendah"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[6]/text()").extract()[p]
+            item["dateTime"] = datetime.now()
+
+            yield item
             

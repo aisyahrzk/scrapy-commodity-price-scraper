@@ -12,7 +12,9 @@ BOT_NAME = 'webscrapy'
 SPIDER_MODULES = ['webscrapy.spiders']
 NEWSPIDER_MODULE = 'webscrapy.spiders'
 
-
+#Export as CSV Feed
+FEED_FORMAT = "csv"
+FEED_URI = "dailycommodity_price.csv"
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'webscrapy (+http://www.yourdomain.com)'
 
