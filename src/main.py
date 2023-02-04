@@ -6,28 +6,11 @@ import os
 import subprocess
 import logging
 
-def set_logging(): 
-    # Get current time and convert to date
-    today = datetime.now().strftime("%Y-%m-%d")
-    log_file = f'./logs/{today}.log'
-
-    # Create an empty log file if not exist
-    if not os.path.exists(log_file):
-        open(log_file, 'a')
-    else:
-        pass
-    # Set logging config
-    logging.basicConfig(filename=log_file, 
-                        encoding='utf-8', 
-                        level=logging.INFO, 
-                        filemode='a', 
-                        format='%(levelname)s: %(message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S')
 
 def asyncio_schedule():
+    
     """schedule tasks"""
     def run_spider(): 
-        set_logging()
         # Start 
         logging.info('Started crawling {}...'.format(datetime.now()))
         # Run scrapy crawl
@@ -35,18 +18,6 @@ def asyncio_schedule():
         # End
         logging.info('Finished crawling {}...'.format(datetime.now()))
 
-    """
-    def remove_old_log():
-        # Delete logs older than 21 days
-        date_delete = get_past_day('day', 21)
-        log_delete = f'GetGold/logs/{date_delete}.log'
-        try:
-            os.remove(log_delete)
-        except Exception as msg:
-            logging.info(f"log '{log_delete}' doesn't exist, skip delete log file!")
-        else:
-            logging.info(f"deleted {log_delete}!")
-    """
 
     scheduler = AsyncIOScheduler()
     # Add task to crawl per hour between 7a.m to 7p.m

@@ -17,7 +17,6 @@ class PostgresPipeline(object):
     host            =   config.DB_HOSTNAME
     database        =   config.DB_DATABASE
     port            =   config.DB_PORT
-    schema          =   config.DB_SCHEMA
     insert_table    =   config.DB_INSERT_TABLE
     
     def open_spider(self, spider):

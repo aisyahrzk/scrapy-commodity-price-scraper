@@ -3,7 +3,7 @@ from datetime import datetime
 from ..items import WebscrapyDailyCommodityItem
 from scrapy.http import Request
 import pandas as pd
-
+import numpy as np
 
 class FamaSpider(scrapy.Spider):
     name = 'fama'
@@ -18,28 +18,38 @@ class FamaSpider(scrapy.Spider):
         urls = ['https://sdvi2.fama.gov.my/price/direct/price/daily_commodityRpt.asp?Pricing=A&LevelCd=03&PricingDt={0}&PricingDtPrev={0}'.format('2015/01/01')]
         for url in urls: 
             yield Request(url, callback=self.parse_page)
-#for i in dateRange.strftime('%Y/%m/%d')
+
     def parse_page(self, response):
         
 
         barang = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[1]/text()")
+        namapusat = response.xpath("/html/body/table/tr/td/table[position () mod 2 = 1]/tr/td/b/text()").extract()
 
-        for p in range(len(barang)):
 
-            # Create an object of Item class
-            item = WebscrapyDailyCommodityItem()
+        
+        x = 1
+        for table in response.xpath("/html/body/table/tr/td/table"):
 
-            index_pusat = p % 36
-            print(index_pusat)
+            if x % 2 == 1:
 
-            item["NamaPusat"] = response.xpath("/html/body/table/tr/td/table[position () mod 2 = 1]/tr/td/b/text()").extract()[index_pusat]
-            #item["NamaPusat"] = response.xpath("/html/body/table/tr/td").extract()
-            item["NamaVarieti"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[1]/text()").extract()[p]
-            item["UnitBarang"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[3]/text()").extract()[p]
-            item["HargaTinggi"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[4]/text()").extract()[p]
-            item["HargaPurata"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[5]/text()").extract()[p]
-            item["HargaRendah"] = response.xpath("/html/body/table/tr/td/table[position() mod 2 = 0]/tr[contains(@id,content-body)][position() > 2]/td[6]/text()").extract()[p]
-            item["dateTime"] = datetime.now()
-
-            yield item
+                pusat = table.xpath(".//tr/td/b/text()").extract()
             
+            x = x+1
+
+             
+
+            for p in table.xpath(".//tr[contains(@id,content-body)][position() > 2]"):
+
+                # Create an object of Item class
+                item = WebscrapyDailyCommodityItem()
+
+                item["NamaPusat"]  = pusat
+                item["NamaVarieti"] = p.xpath(".//td[1]/text()").extract()
+                item["UnitBarang"] = p.xpath(".//td[3]/text()").extract()
+                item["HargaTinggi"] = p.xpath(".//td[4]/text()").extract()
+                item["HargaPurata"] = p.xpath(".//td[5]/text()").extract()
+                item["HargaRendah"] = p.xpath(".//td[6]/text()").extract()
+                item["dateTime"] = datetime.now()
+
+                yield item
+                
