@@ -42,6 +42,8 @@ class FamaSpider(scrapy.Spider):
 
                 # Create an object of Item class
                 item = WebscrapyDailyCommodityItem()
+                today = datetime.now()
+
 
                 item["NamaPusat"]  = pusat
                 item["NamaVarieti"] = p.xpath(".//td[1]/text()").extract()
@@ -49,7 +51,7 @@ class FamaSpider(scrapy.Spider):
                 item["HargaTinggi"] = p.xpath(".//td[4]/text()").extract()
                 item["HargaPurata"] = p.xpath(".//td[5]/text()").extract()
                 item["HargaRendah"] = p.xpath(".//td[6]/text()").extract()
-                item["dateTime"] = datetime.now()
+                item["dateTime"] = today
 
                 yield item
                 

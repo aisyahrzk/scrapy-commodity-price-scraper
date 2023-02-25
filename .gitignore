@@ -3,3 +3,4 @@
 /src/config.py
 /webscrapy/__pycache__/settings.cpython-39.pyc
 /webscrapy/spiders/__pycache__/fama.cpython-39.pyc
+/webscrapy/config/constant.py

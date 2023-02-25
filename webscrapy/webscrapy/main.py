@@ -1,11 +1,8 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
-from datetime import datetime, date
-import time
-import os
+from datetime import datetime
 import subprocess
 import logging
-
 
 def asyncio_schedule():
     
@@ -21,7 +18,7 @@ def asyncio_schedule():
 
     scheduler = AsyncIOScheduler()
     # Add task to crawl per hour between 7a.m to 7p.m
-    scheduler.add_job(func=run_spider, trigger='cron', hour='12')
+    scheduler.add_job(func=run_spider, trigger='cron', hour='1',minute = '7')
     # Add task to clean old log, keep logs for last 14 days only, run at 11:30p.m
     #scheduler.add_job(func=remove_old_log, trigger='cron', hour='23', minute='30')
     # Start process
