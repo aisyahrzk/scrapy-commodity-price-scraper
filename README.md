@@ -1,1 +1,2 @@
-# Food-Price-Inflation-Analysis
+# Daily Commodity Automated Scraper
+
